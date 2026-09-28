@@ -1,0 +1,193 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(
+        135deg,
+        #a34a01 0%,
+        #654201 100%
+    );
+
+    overflow: hidden;
+}
+
+.clock {
+    position: relative;
+
+    width: 500px;
+    height: 500px;
+
+    border-radius: 50%;
+}
+
+/* =========================
+   CHIFFRES
+========================= */
+
+.numbers span {
+    position: absolute;
+
+    color: rgba(255,255,255,0.3);
+    font-size: 30px;
+    font-family: Arial, sans-serif;
+}
+
+.n12 { top: 5%; left: 48%; }
+.n1  { top: 10%; right: 27%; }
+.n2  { top: 22%; right: 13%; }
+.n3  { top: 44%; right: 5%; }
+.n4  { bottom: 28%; right: 10%; }
+.n5  { bottom: 12%; right: 28%; }
+.n6  { bottom: 3%; left: 48%; }
+.n7  { bottom: 12%; left: 29%; }
+.n8  { bottom: 28%; left: 10%; }
+.n9  { top: 44%; left: 5%; }
+.n10 { top: 22%; left: 12%; }
+.n11 { top: 10%; left: 27%; }
+
+
+/* =========================
+   ARAIGNÉE
+========================= */
+
+.spider {
+    position: absolute;
+
+    width: 130px;
+    height: 130px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+}
+
+/* corps */
+
+.body {
+    position: absolute;
+
+    width: 35px;
+    height: 65px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 10;
+}
+
+/* tête */
+
+.body::before {
+    content: "";
+
+    position: absolute;
+
+    width: 28px;
+    height: 32px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    left: 50%;
+    top: -17px;
+
+    transform: translateX(-50%);
+}
+
+
+/* =========================
+   PATTES
+========================= */
+
+.leg {
+    position: absolute;
+
+    width: 95px;
+    height: 4px;
+
+    background: white;
+
+    left: 50%;
+    top: 50%;
+
+    transform-origin: 0 50%;
+
+    border-radius: 5px;
+}
+
+
+/* pattes gauches */
+
+.leg1 {
+    transform: rotate(200deg);
+}
+
+.leg2 {
+    transform: rotate(215deg);
+}
+
+.leg3 {
+    transform: rotate(235deg);
+}
+
+.leg4 {
+    transform: rotate(250deg);
+}
+
+
+/* pattes droites */
+
+.leg5 {
+    transform: rotate(-20deg);
+}
+
+.leg6 {
+    transform: rotate(-35deg);
+}
+
+.leg7 {
+    transform: rotate(-55deg);
+}
+
+.leg8 {
+    transform: rotate(-70deg);
+}
+
+
+/* =========================
+   CENTRE
+========================= */
+
+.center {
+    position: absolute;
+
+    width: 14px;
+    height: 14px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 20;
+}

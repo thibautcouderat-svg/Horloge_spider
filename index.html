@@ -1,72 +1,147 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Spider Clock</title>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spider-Man Clock</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#e62429;--blue:#2b6cff}
+html,body{min-height:100%}
+body{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;align-items:center;
+ font-family:"Trebuchet MS",Arial,sans-serif;color:#fff;overflow-x:hidden;
+ background:radial-gradient(circle at 50% 45%,#3a0b16 0%,#150a24 55%,#05060f 100%)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+ background:radial-gradient(circle at 20% 20%,rgba(43,108,255,.18),transparent 40%),
+ radial-gradient(circle at 80% 80%,rgba(230,36,41,.2),transparent 40%);
+ animation:bg 8s ease-in-out infinite alternate}
+@keyframes bg{to{opacity:.5;transform:scale(1.15)}}
+main{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:16px;text-align:center;perspective:900px}
+h1{font-size:clamp(26px,5vw,48px);font-weight:900;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;
+ background:linear-gradient(90deg,#fff,var(--red),#fff);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+ animation:shine 4s linear infinite;filter:drop-shadow(0 0 12px rgba(230,36,41,.6))}
+@keyframes shine{to{background-position:200% center}}
+.stage{width:min(88vw,62vh,540px);aspect-ratio:1;animation:appear 1.4s cubic-bezier(.16,1,.3,1) both}
+@keyframes appear{from{opacity:0;transform:scale(.5) rotate(-25deg)}to{opacity:1;transform:none}}
+.tilt{width:100%;height:100%;transition:transform .15s ease-out;transform-style:preserve-3d}
+svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 30px rgba(230,36,41,.45))}
+.digital{margin-top:14px;font-size:clamp(22px,4vw,34px);font-weight:700;letter-spacing:6px;text-shadow:0 0 14px var(--red)}
+.date{margin-top:4px;font-size:14px;letter-spacing:2px;color:rgba(255,255,255,.6);text-transform:capitalize}
+.ring{animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.55}}
+.rip{fill:none;stroke:var(--red);stroke-width:2;transform-origin:200px 200px;animation:rip 1.4s ease-out forwards}
+@keyframes rip{from{opacity:.8;transform:scale(.15)}to{opacity:0;transform:scale(1.05)}}
+.emblem{animation:beat 2s ease-in-out infinite;transform-origin:200px 200px}
+@keyframes beat{50%{transform:scale(1.07)}}
+.p{position:fixed;bottom:-20px;width:3px;height:3px;border-radius:50%;background:#fff;opacity:0;z-index:1;
+ box-shadow:0 0 8px 2px var(--red);animation:float linear infinite}
+@keyframes float{10%{opacity:.9}to{transform:translateY(-110vh) translateX(var(--dx));opacity:0}}
+</style>
 </head>
-
 <body>
+<div id="particles"></div>
+<main>
+ <h1>Spider Clock</h1>
+ <div class="stage"><div class="tilt" id="tilt">
+ <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+   <symbol id="spider" viewBox="-60 -60 120 120" overflow="visible">
+    <g stroke="#e62429" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+     <g id="legs">
+      <polyline points="3,-9 16,-28 26,-30 34,-46"/>
+      <polyline points="4,-4 24,-14 38,-12 50,-24"/>
+      <polyline points="4,3 26,8 40,16 48,34"/>
+      <polyline points="3,9 18,22 26,38 30,52"/>
+     </g>
+     <use href="#legs" transform="scale(-1,1)"/>
+    </g>
+    <ellipse cx="0" cy="8" rx="7.5" ry="15" fill="#e62429"/>
+    <circle cx="0" cy="-11" r="5" fill="#e62429"/>
+   </symbol>
+   <radialGradient id="face" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#2a0a14"/><stop offset="1" stop-color="#0b0716"/>
+   </radialGradient>
+   <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#ff4a4f"/><stop offset=".5" stop-color="#8d0f16"/><stop offset="1" stop-color="#ff4a4f"/>
+   </linearGradient>
+   <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <circle cx="200" cy="200" r="196" fill="url(#face)" stroke="url(#rim)" stroke-width="6"/>
+  <circle class="ring" cx="200" cy="200" r="188" fill="none" stroke="#e62429" stroke-width="1" opacity=".7"/>
+  <g id="web" stroke="rgba(255,255,255,.22)" fill="none" stroke-width="1"></g>
+  <g id="ticks"></g>
+  <g id="nums" fill="#fff" font-size="20" font-weight="700" text-anchor="middle" filter="url(#glow)"></g>
+  <g id="ripples"></g>
+  <g filter="url(#glow)" stroke-linecap="round">
+   <line id="hh" x1="200" y1="215" x2="200" y2="120" stroke="#e62429" stroke-width="6"/>
+   <line id="mh" x1="200" y1="218" x2="200" y2="65" stroke="#f5f5f5" stroke-width="3.5"/>
+   <g id="sh"><line x1="200" y1="230" x2="200" y2="60" stroke="#5aa9ff" stroke-width="1.4"/>
+    <use href="#spider" x="182" y="22" width="36" height="36"/></g>
+  </g>
+  <g class="emblem"><circle cx="200" cy="200" r="34" fill="#0b0716" stroke="#e62429" stroke-width="2"/>
+   <use href="#spider" x="160" y="160" width="80" height="80" filter="url(#glow)"/></g>
+ </svg></div></div>
+ <div class="digital" id="digital">00:00:00</div>
+ <div class="date" id="date"></div>
+</main>
+<script>
+const NS="http://www.w3.org/2000/svg",C=200;
+const $=id=>document.getElementById(id);
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e};
+const pt=(r,deg)=>{const a=(deg-90)*Math.PI/180;return[C+r*Math.cos(a),C+r*Math.sin(a)]};
 
-    <main class="spider-clock-container">
+// Toile d'araignée
+const web=$("web");
+for(let i=0;i<12;i++){const[x,y]=pt(180,i*30);el("line",{x1:C,y1:C,x2:x,y2:y},web)}
+[45,75,105,135,160].forEach(r=>{
+  let d="";
+  for(let i=0;i<12;i++){
+    const[x1,y1]=pt(r,i*30),[x2,y2]=pt(r,(i+1)*30),[cx,cy]=pt(r*.9,i*30+15);
+    d+=(i?"":`M${x1} ${y1}`)+` Q${cx} ${cy} ${x2} ${y2}`;
+  }
+  el("path",{d:d+"Z"},web);
+});
+// Graduations et chiffres
+for(let i=0;i<60;i++){
+  const big=i%5==0,[x1,y1]=pt(big?176:181,i*6),[x2,y2]=pt(187,i*6);
+  el("line",{x1,y1,x2,y2,stroke:big?"#e62429":"rgba(255,255,255,.4)","stroke-width":big?3:1.2,"stroke-linecap":"round"},$("ticks"));
+}
+for(let h=1;h<=12;h++){const[x,y]=pt(152,h*30);const t=el("text",{x,y:y+7},$("nums"));t.textContent=h}
 
-        <h1>Spider Clock</h1>
+// Particules
+for(let i=0;i<28;i++){
+  const p=document.createElement("div");p.className="p";
+  p.style.left=Math.random()*100+"vw";
+  p.style.setProperty("--dx",(Math.random()*120-60)+"px");
+  p.style.animationDuration=6+Math.random()*9+"s";
+  p.style.animationDelay=Math.random()*10+"s";
+  $("particles").appendChild(p);
+}
 
-        <div class="clock">
+// Inclinaison 3D à la souris (ordinateur)
+addEventListener("mousemove",e=>{
+  const x=(e.clientX/innerWidth-.5)*2,y=(e.clientY/innerHeight-.5)*2;
+  $("tilt").style.transform=`rotateY(${x*12}deg) rotateX(${-y*12}deg)`;
+});
+addEventListener("mouseleave",()=>$("tilt").style.transform="");
 
-            <!-- Toile d'araignée -->
-            <div class="web web-1"></div>
-            <div class="web web-2"></div>
-            <div class="web web-3"></div>
-
-            <!-- Chiffres -->
-            <div class="number n12">12</div>
-            <div class="number n1">1</div>
-            <div class="number n2">2</div>
-            <div class="number n3">3</div>
-            <div class="number n4">4</div>
-            <div class="number n5">5</div>
-            <div class="number n6">6</div>
-            <div class="number n7">7</div>
-            <div class="number n8">8</div>
-            <div class="number n9">9</div>
-            <div class="number n10">10</div>
-            <div class="number n11">11</div>
-
-            <!-- Araignée -->
-            <div class="spider">
-
-                <div class="spider-leg leg-1"></div>
-                <div class="spider-leg leg-2"></div>
-                <div class="spider-leg leg-3"></div>
-                <div class="spider-leg leg-4"></div>
-
-                <div class="spider-leg leg-5"></div>
-                <div class="spider-leg leg-6"></div>
-                <div class="spider-leg leg-7"></div>
-                <div class="spider-leg leg-8"></div>
-
-                <div class="spider-body"></div>
-
-                <div class="spider-head"></div>
-
-            </div>
-
-            <!-- Centre -->
-            <div class="clock-center"></div>
-
-        </div>
-
-        <p class="instruction">
-            L'heure actuelle est affichée par les pattes de l'araignée
-        </p>
-
-    </main>
-
-    <script src="script.js"></script>
-
+// Horloge
+const rot=(id,a)=>$(id).setAttribute("transform",`rotate(${a} ${C} ${C})`);
+const pad=n=>String(n).padStart(2,"0");
+let lastSec=-1;
+function tick(){
+  const n=new Date(),ms=n.getMilliseconds(),s=n.getSeconds()+ms/1000,m=n.getMinutes()+s/60,h=(n.getHours()%12)+m/60;
+  rot("sh",s*6);rot("mh",m*6);rot("hh",h*30);
+  if(n.getSeconds()!==lastSec){
+    lastSec=n.getSeconds();
+    $("digital").textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(lastSec)}`;
+    $("date").textContent=n.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const c=el("circle",{class:"rip",cx:C,cy:C,r:190},$("ripples"));
+    c.addEventListener("animationend",()=>c.remove());
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
 </body>
 </html>
